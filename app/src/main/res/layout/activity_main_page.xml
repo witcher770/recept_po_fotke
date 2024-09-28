@@ -58,7 +58,8 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignParentRight="true"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:src="@drawable/settings"
+        />
 
 
 </RelativeLayout>

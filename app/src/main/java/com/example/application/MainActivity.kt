@@ -1,10 +1,12 @@
 package com.example.application
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +27,12 @@ class MainActivity : AppCompatActivity() {
         val listNew = findViewById<ListView>(R.id.list)
         val clientData: EditText = findViewById(R.id.client_data)
         val button = findViewById<Button>(R.id.button)
+        val link = findViewById<TextView>(R.id.link)
+
+        link.setOnClickListener {
+            val intent = Intent(this, MainPage::class.java)
+            startActivity(intent)
+        }
 
         val products: MutableList<String> = mutableListOf()
         val adapter = ArrayAdapter(this, android.R.layout.simple_expandable_list_item_1, products)
