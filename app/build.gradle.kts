@@ -61,6 +61,25 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
+
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.androidx.camera.extensions)
+    implementation (libs.androidx.camera.extensions.v110)
+    implementation (libs.androidx.material.icons.extended)
+
+    implementation (libs.ui)
+    implementation (libs.androidx.material)
+    implementation (libs.androidx.activity.compose.v150)
+    implementation (libs.androidx.lifecycle.runtime.ktx.v260)
+    implementation (libs.androidx.camera.core)
+    implementation (libs.androidx.camera.camera2.v110)
+    implementation (libs.androidx.camera.lifecycle.v110)
+    implementation (libs.androidx.camera.view.v110)
+
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
