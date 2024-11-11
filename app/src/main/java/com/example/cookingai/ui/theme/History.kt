@@ -53,6 +53,7 @@ public fun History(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
+                    //.verticalScroll(rememberScrollState())
                     //.background(Color.Green)
             ) {
                 items(count = 10) {
