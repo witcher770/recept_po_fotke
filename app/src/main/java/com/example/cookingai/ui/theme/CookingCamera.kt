@@ -48,118 +48,17 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import com.example.cookingai.MainViewModel
+import com.example.cookingai.models.ServerViewModel
 
-//@Composable
-//public fun CookingCamera(navController: NavController) {
-//    Column(
-//        modifier = Modifier.fillMaxSize(),
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.Center,) {
-//        Text(text = "В будущем тут будет камера, но пока только кнопочка")
-//        Button(
-//            onClick = {
-//                navController.navigate("MainScreen")
-//            },
-//            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF98d7ff))
-//        ) {
-//            Text(text = "Назад в меню")
-//        }
-//    }
-//}
-
-//@Composable
-//fun CookingCamera(navController: NavController) {
-//    var permissionsGranted by remember { mutableStateOf(false) }
-//
-//    RequestCameraPermissions { granted ->
-//        permissionsGranted = granted
-//    }
-//
-//    if (permissionsGranted) {
-//        CameraScreen()
-//    } else {
-//        Text("Разрешения не предоставлены. Пожалуйста, дайте доступ к камере.")
-//    }
-//}
-//
-//@Composable
-//fun RequestCameraPermissions(onPermissionsResult: (Boolean) -> Unit) {
-//    val context = LocalContext.current
-//    val cameraPermission = Manifest.permission.CAMERA
-//    val cameraPermissionState = remember {
-//        ActivityCompat.checkSelfPermission(context, cameraPermission) == PackageManager.PERMISSION_GRANTED
-//    }
-//
-//    val requestPermissionLauncher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.RequestPermission(),
-//        onResult = { isGranted: Boolean ->
-//            onPermissionsResult(isGranted)
-//        }
-//    )
-//
-//    if (!cameraPermissionState) {
-//        Button(onClick = { requestPermissionLauncher.launch(cameraPermission) }) {
-//            Text("Запросить разрешение на использование камеры")
-//        }
-//    } else {
-//        onPermissionsResult(true)
-//    }
-//}
-//
-////@Composable
-////fun RequestCameraPermission() {
-////    val context = LocalContext.current
-////    var hasCameraPermission by remember {
-////        mutableStateOf(
-////            ContextCompat.checkSelfPermission(
-////                context,
-////                Manifest.permission.CAMERA
-////            ) == PackageManager.PERMISSION_GRANTED
-////        )
-////    }
-////
-////    val launcher = rememberLauncherForActivityResult(
-////        contract = ActivityResultContracts.RequestPermission()
-////    ) { isGranted: Boolean ->
-////        hasCameraPermission = isGranted
-////    }
-////
-////    if (!hasCameraPermission) {
-////        Button(onClick = {
-////            launcher.launch(Manifest.permission.CAMERA)
-////        }) {
-////            Text("Дать разрешение на камеру")
-////        }
-////    } else {
-////        Text("Разрешение предоставлено")
-////    }
-////}
-//
-//@Composable
-//fun CameraScreen() {
-//    val context = LocalContext.current
-//    val lifecycleOwner = LocalLifecycleOwner.current
-//    val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
-//
-//    AndroidView(
-//        factory = { ctx ->
-//            val previewView = PreviewView(ctx)
-//            cameraProviderFuture.addListener({
-//                val cameraProvider = cameraProviderFuture.get()
-//                val preview = Preview.Builder().build().also {
-//                    it.setSurfaceProvider(previewView.surfaceProvider)
-//                }
-//
-//                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-//                cameraProvider.unbindAll()
-//                cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview)
-//            }, ContextCompat.getMainExecutor(ctx))
-//
-//            previewView
-//        },
-//        modifier = Modifier.fillMaxSize()
-//    )
-//}
 
 @Composable
 fun CameraPermissionRequester(
@@ -258,45 +157,69 @@ fun takePhoto(
     )
 }
 
+
 @Composable
-fun CookingCamera(navController: NavController) {
+fun CookingCamera(navController: NavController, viewModel: MainViewModel, serverViewModel: ServerViewModel) {
     var hasCameraPermission by remember { mutableStateOf(false) }
-    var imageCapture: ImageCapture? = remember { null }
-    val context = LocalContext.current  // Переместим контекст сюда
+    // var imageCapture: ImageCapture? = remember { null }
+    var imageCapture: ImageCapture? by remember { mutableStateOf(null) } // Инициализация с null
+    var capturedImageUri by remember { mutableStateOf<Uri?>(null) } // Хранит URI фото
+    var showSuccessMessage by remember { mutableStateOf(false) } // Показывает сообщение об успехе
+    val context = LocalContext.current
 
+    val response by serverViewModel.responseLiveData.observeAsState()
 
+    // Запрос разрешения на камеру
     CameraPermissionRequester(
-        onPermissionGranted = { hasCameraPermission = true },
-        onPermissionDenied = { /* Обработка ошибки */ }
+        onPermissionGranted = { hasCameraPermission = true
+                                Log.d("Camera", "Camera permission granted")},
+        onPermissionDenied = { /* Обработка ошибки */
+                                Log.e("Camera", "Camera permission denied")}
     )
 
     if (hasCameraPermission) {
         Box(modifier = Modifier.fillMaxSize()) {
+            // Предварительный просмотр с камеры
             CameraPreview(
-                imageCapture = { capture -> imageCapture = capture },
+                imageCapture = { capture -> imageCapture = capture
+                    Log.d("Camera", "imageCapture initialized") },
                 onImageCaptured = { uri ->
-                    // Обработка сохраненного изображения
+                    Log.d("Camera", "Image captured: $uri")
+                    capturedImageUri = uri // Сохраняем URI фото
+                    viewModel.updateLastPhoto(uri) // Сохраните URI в ViewModel
+                    showSuccessMessage = true // Показать сообщение об успехе
                 },
                 onError = { exception ->
-                    // Обработка ошибки
+                    // Обработка ошибки при захвате фото
+                    Log.e("Camera", "Error capturing image: $exception")
                 }
             )
 
             // Кнопка для захвата фото
             IconButton(
                 onClick = {
-                    imageCapture?.let { capture ->
+                    if (imageCapture != null) {
+                        Log.d("Camera", "Attempting to take photo...")
                         takePhoto(
-                            imageCapture = capture,
+                            imageCapture = imageCapture!!,
                             context = context,
                             onImageCaptured = { uri ->
-                                // Действие с сохраненным фото
+                                Log.d("Camera", "Photo taken: $uri")
+                                capturedImageUri = uri
+                                viewModel.updateLastPhoto(uri)
+                                showSuccessMessage = true // Показать сообщение об успехе
+
                             },
                             onError = { exception ->
-                                // Обработка ошибки
+                                Log.e("Camera", "Error in takePhoto: $exception")
                             }
                         )
+                    } else {
+                        Log.e("Camera", "imageCapture is null when attempting to take photo")
                     }
+
+                    // здесь возможно стоит поставить переход
+                    //navController.navigate("ListOfIngredients?photoUri=$uri")
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -311,8 +234,51 @@ fun CookingCamera(navController: NavController) {
                     modifier = Modifier.size(48.dp)
                 )
             }
+
+            // Сообщение об успешном создании фото
+            if (showSuccessMessage) {
+                Text(
+                    text = "Фото сделано!",
+                    color = Color.Green,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .background(Color.White)
+                        .padding(8.dp)
+                )
+                // Таймер для скрытия сообщения через 2 секунды
+                LaunchedEffect(Unit) {
+                    kotlinx.coroutines.delay(2000) // Ждем 2 секунды
+                    showSuccessMessage = false // Скрываем сообщение
+                }
+            }
+
+            // Отображение сохраненного фото (если есть)
+            capturedImageUri?.let { uri ->
+                Image(
+                    painter = rememberAsyncImagePainter(uri),
+                    contentDescription = "Сделанное фото",
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .size(200.dp)
+                        .padding(top = 16.dp)
+                )
+            }
+
+
+            // Перемещение навигации в LaunchedEffect
+            LaunchedEffect(capturedImageUri) {
+                capturedImageUri?.let {
+                    // Переход только после захвата фото
+                    Log.d("Camera", "Navigating to ListOfIngredients")
+
+                    serverViewModel
+                    navController.navigate("ListOfIngredients")
+                }
+            }
         }
+
     } else {
         Text("Запрос разрешения на использование камеры")
     }
 }
+

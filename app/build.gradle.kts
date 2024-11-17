@@ -69,6 +69,10 @@ dependencies {
     implementation (libs.androidx.camera.extensions.v110)
     implementation (libs.androidx.material.icons.extended)
 
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+    implementation (libs.okhttp)
+
     implementation (libs.ui)
     implementation (libs.androidx.material)
     implementation (libs.androidx.activity.compose.v150)
@@ -78,6 +82,18 @@ dependencies {
     implementation (libs.androidx.camera.lifecycle.v110)
     implementation (libs.androidx.camera.view.v110)
 
+    implementation (libs.androidx.ui.v140) // или актуальная версия
+    implementation (libs.androidx.lifecycle.viewmodel.compose) // Для ViewModel в Compose
+    implementation (libs.androidx.runtime.livedata) // Для LiveData с Compose
+    // Jetpack Compose
+    implementation (libs.androidx.ui.v175)  // или актуальная версия Compose
+    implementation (libs.material3)  // Для использования Material3
+    implementation (libs.androidx.runtime.livedata.v140) // Для LiveData с Compose
+    implementation (libs.androidx.lifecycle.viewmodel.compose.v261) // Для ViewModel с Compose
+
+    // Для отображения изображений в Compose
+    implementation(libs.coil.compose)
+    implementation(libs.coil.compose.v222)
 
 
     testImplementation(libs.junit)
