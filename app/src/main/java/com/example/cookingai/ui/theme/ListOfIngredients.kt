@@ -37,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,10 +45,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.cookingai.MainViewModel
+import com.example.cookingai.models.ServerViewModel
 import androidx.lifecycle.ViewModel
 
 @Composable
-fun ListOfIngredients(navController: NavController, viewModel: MainViewModel = viewModel()){
+fun ListOfIngredients(navController: NavController, viewModel: MainViewModel){
 
     // Используем состояние для списка
     val itemList = remember { mutableStateListOf("сосиска", "сорделька", "колбаска", "котлетка", "тефтелька") }

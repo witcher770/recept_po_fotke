@@ -42,8 +42,15 @@ import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.mutableStateOf
 import android.net.Uri
 import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.saveable.rememberSaveable
+
 import coil.compose.AsyncImage
+import com.example.cookingai.models.ServerViewModel
+import com.example.cookingai.ui.theme.HistoryRecipes
 import com.example.cookingai.ui.theme.ListOfIngredients
+import com.example.cookingai.ui.theme.RecipeDetailScreen
+import com.example.cookingai.ui.theme.TestServer
 
 //import com.example.cookingai.ui.theme.MainScreenshot
 
@@ -70,6 +77,9 @@ class MainViewModel : ViewModel() {
 @Composable
 fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val navController = rememberNavController()
+    val serverViewModel = ServerViewModel()
+    val allRecipes = remember { mutableStateListOf<List<String>>() }
+
 
     Column {
         NavHost(navController = navController, startDestination = "MainScreen") {
@@ -78,6 +88,22 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             composable("CookingCamera") { CookingCamera(navController, viewModel) }
             composable("History") { History(navController) }
             composable("ListOfIngredients") { ListOfIngredients(navController, viewModel) }
+            composable("TestHistory") { TestServer(serverViewModel) }
+            composable("recipe") { backStackEntry ->
+                val recipe = backStackEntry.arguments?.getStringArrayList("recipe") ?: listOf()
+                RecipeDetailScreen(
+                    recipe = recipe,
+                    navController = navController,
+                    onSaveRecipe = { allRecipes.add(it) },
+                    onDeleteRecipe = { recipeToDelete -> allRecipes.remove(recipeToDelete) }
+                )
+            }
+            composable("allRecipes") {
+                HistoryRecipes(
+                    allRecipes = allRecipes,
+                    navController = navController
+                )
+            }
         }
 
         // Отображаем последнее фото под кнопкой "История", если оно есть

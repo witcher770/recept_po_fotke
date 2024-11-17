@@ -266,7 +266,7 @@ fun CookingCamera(navController: NavController, viewModel: MainViewModel) {
                 capturedImageUri?.let {
                     // Переход только после захвата фото
                     Log.d("Camera", "Navigating to ListOfIngredients")
-                    navController.navigate("ListOfIngredients?photoUri=$it")
+                    navController.navigate("ListOfIngredients")
                 }
             }
         }
