@@ -52,10 +52,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.cookingai.MainViewModel
+import com.example.cookingai.models.ServerViewModel
 
 
 @Composable
@@ -157,13 +159,15 @@ fun takePhoto(
 
 
 @Composable
-fun CookingCamera(navController: NavController, viewModel: MainViewModel) {
+fun CookingCamera(navController: NavController, viewModel: MainViewModel, serverViewModel: ServerViewModel) {
     var hasCameraPermission by remember { mutableStateOf(false) }
     // var imageCapture: ImageCapture? = remember { null }
     var imageCapture: ImageCapture? by remember { mutableStateOf(null) } // Инициализация с null
     var capturedImageUri by remember { mutableStateOf<Uri?>(null) } // Хранит URI фото
     var showSuccessMessage by remember { mutableStateOf(false) } // Показывает сообщение об успехе
     val context = LocalContext.current
+
+    val response by serverViewModel.responseLiveData.observeAsState()
 
     // Запрос разрешения на камеру
     CameraPermissionRequester(
@@ -266,6 +270,8 @@ fun CookingCamera(navController: NavController, viewModel: MainViewModel) {
                 capturedImageUri?.let {
                     // Переход только после захвата фото
                     Log.d("Camera", "Navigating to ListOfIngredients")
+
+                    serverViewModel
                     navController.navigate("ListOfIngredients")
                 }
             }
