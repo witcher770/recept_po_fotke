@@ -34,7 +34,7 @@ public fun History(navController: NavController) {
     Column(
         modifier = Modifier.fillMaxSize(), //.background(Color.Red),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,) {
+        verticalArrangement = Arrangement.Center) {
         Text(text = "В будущем тут будет история, но пока только кнопочка")
         Button(
             onClick = {

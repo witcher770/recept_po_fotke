@@ -91,6 +91,10 @@ dependencies {
     implementation (libs.androidx.runtime.livedata.v140) // Для LiveData с Compose
     implementation (libs.androidx.lifecycle.viewmodel.compose.v261) // Для ViewModel с Compose
 
+    // Для отображения изображений в Compose
+    implementation(libs.coil.compose)
+    implementation(libs.coil.compose.v222)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

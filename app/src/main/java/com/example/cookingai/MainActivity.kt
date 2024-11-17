@@ -12,7 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.cookingai.ui.theme.CookingCamera
 import com.example.cookingai.ui.theme.History
 import com.example.cookingai.ui.theme.SettiSreen
-import com.example.cookingai.models.MainViewModel
+//import com.example.cookingai.models.MainViewModel
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -38,6 +38,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 
+import androidx.lifecycle.ViewModel
+import androidx.compose.runtime.mutableStateOf
+import android.net.Uri
+import androidx.compose.foundation.layout.size
+import coil.compose.AsyncImage
+import com.example.cookingai.ui.theme.ListOfIngredients
 
 //import com.example.cookingai.ui.theme.MainScreenshot
 
@@ -51,14 +57,39 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+class MainViewModel : ViewModel() {
+    // Переменная для хранения последнего сделанного фото
+    val lastPhotoUri = mutableStateOf<Uri?>(null)
+
+    // Функция для обновления URI последнего фото
+    fun updateLastPhoto(uri: Uri) {
+        lastPhotoUri.value = uri
+    }
+}
+
 @Composable
 fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "MainScreen") {
-        composable("MainScreen") { MainScreenshot(navController) }
-        composable("Settin") { SettiSreen(navController) }
-        composable("CookingCamera") { CookingCamera(navController) }
-        composable("History") { History(navController) }
+
+    Column {
+        NavHost(navController = navController, startDestination = "MainScreen") {
+            composable("MainScreen") { MainScreenshot(navController) }
+            composable("Settin") { SettiSreen(navController) }
+            composable("CookingCamera") { CookingCamera(navController, viewModel) }
+            composable("History") { History(navController) }
+            composable("ListOfIngredients") { ListOfIngredients(navController, viewModel) }
+        }
+
+        // Отображаем последнее фото под кнопкой "История", если оно есть
+        viewModel.lastPhotoUri.value?.let { uri ->
+            AsyncImage(
+                model = uri,
+                contentDescription = "Последнее фото",
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .size(200.dp)
+            )
+        }
     }
 }
 

@@ -7,6 +7,8 @@ cameraCamera2Version = "1.1.0"
 cameraExtensions = "1.1.0"
 cameraLifecycle = "1.1.0"
 cameraView = "1.1.0"
+coilCompose = "2.0.0"
+coilComposeVersion = "2.2.2"
 converterGson = "2.9.0"
 gradle = "7.4.2"
 kotlin = "1.9.0"
@@ -53,6 +55,8 @@ androidx-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedat
 androidx-runtime-livedata-v140 = { module = "androidx.compose.runtime:runtime-livedata", version.ref = "runtimeLivedataVersion" }
 androidx-ui-v140 = { module = "androidx.compose.ui:ui", version.ref = "uiVersion" }
 androidx-ui-v175 = { module = "androidx.compose.ui:ui", version.ref = "androidxUi" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+coil-compose-v222 = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
