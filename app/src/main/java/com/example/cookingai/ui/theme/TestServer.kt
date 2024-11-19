@@ -64,5 +64,34 @@ fun TestServer(serverViewModel: ServerViewModel) {
         response?.let {
             Text(text = "Ответ сервера: $it")
         }
+
+
+        // тестирование для списка
+//        TextField(
+//            value = inputText,
+//            onValueChange = { inputText = it },
+//            label = { Text("Введите текст") },
+//            modifier = Modifier.fillMaxWidth()
+//        )
+//
+//        Spacer(modifier = Modifier.height(16.dp))
+//
+//        Button(
+//            onClick = {
+//                if (inputText.isNotEmpty()) {
+//                    serverViewModel.sendText(inputText)
+//                } else {
+//                    Toast.makeText(context, "Введите текст", Toast.LENGTH_SHORT).show()
+//                }
+//            }
+//        ) {
+//            Text("Отправить")
+//        }
+//
+//        Spacer(modifier = Modifier.height(16.dp))
+//
+//        response?.let {
+//            Text(text = "Ответ сервера: $it")
+//        }
     }
 }

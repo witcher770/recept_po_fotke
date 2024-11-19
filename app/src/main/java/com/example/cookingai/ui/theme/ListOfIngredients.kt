@@ -1,6 +1,7 @@
 package com.example.cookingai.ui.theme
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,7 +51,9 @@ import com.example.cookingai.models.ServerViewModel
 import androidx.lifecycle.ViewModel
 
 @Composable
-fun ListOfIngredients(navController: NavController, viewModel: MainViewModel){
+fun ListOfIngredients(navController: NavController, viewModel: MainViewModel, serverViewModel: ServerViewModel){
+    val context = LocalContext.current
+    val response by serverViewModel.responseLiveData.observeAsState()
 
     // Используем состояние для списка
     val itemList = remember { mutableStateListOf("сосиска", "сорделька", "колбаска", "котлетка", "тефтелька") }
@@ -108,8 +112,8 @@ fun ListOfIngredients(navController: NavController, viewModel: MainViewModel){
         LazyColumn(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
+                .weight(0.95f) // разобраться с параметрами
                 .fillMaxWidth()
-                .weight(0.95f)
                 .border(
                     width = 2.dp, // Толщина рамки
                     color = Color.Black, // Цвет рамки
@@ -145,6 +149,18 @@ fun ListOfIngredients(navController: NavController, viewModel: MainViewModel){
             }
         }
 
+//        вероятно отправка списка на сервер должна быть здесь
+//        if (itemList.isNotEmpty()) {
+//            serverViewModel.sendList(itemList)
+//
+//        } else {
+//            Toast.makeText(context, "Добавьте хотя бы один ингредиент", Toast.LENGTH_SHORT).show()
+//        }
+//
+//        response?.let {
+//            Text(text = "Ответ сервера: $it")
+//        }
+
 
         Box(
             modifier = Modifier
@@ -152,9 +168,16 @@ fun ListOfIngredients(navController: NavController, viewModel: MainViewModel){
                 .padding(10.dp), // Добавляем отступы от краев экрана
             contentAlignment = Alignment.BottomCenter // Размещаем содержимое внизу по центру
         ) {
+            // вероятно отправка списка на сервер должна быть здесь
+
+
             Button(
                 onClick = {
+                    // вероятно отправка списка на сервер должна быть здесь
+
                     navController.navigate("MainScreen")
+
+
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF98d7ff))
             ) {

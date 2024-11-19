@@ -25,7 +25,7 @@ import androidx.navigation.NavController
 
 @Composable
 fun RecipeDetailScreen(
-    recipe: List<String>,
+    recipe: List<String>, // где-то здесь передаем сюда список
     navController: NavController,
     onSaveRecipe: (List<String>) -> Unit,
     onDeleteRecipe: (List<String>) -> Unit

@@ -85,10 +85,10 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         NavHost(navController = navController, startDestination = "MainScreen") {
             composable("MainScreen") { MainScreenshot(navController) }
             composable("Settin") { SettiSreen(navController) }
-            composable("CookingCamera") { CookingCamera(navController, viewModel) }
+            composable("CookingCamera") { CookingCamera(navController, viewModel, serverViewModel) }
             composable("History") { History(navController) }
-            composable("ListOfIngredients") { ListOfIngredients(navController, viewModel) }
-            composable("TestHistory") { TestServer(serverViewModel) }
+            composable("ListOfIngredients") { ListOfIngredients(navController, viewModel, serverViewModel) }
+            composable("TestServer") { TestServer(serverViewModel) }
             composable("recipe") { backStackEntry ->
                 val recipe = backStackEntry.arguments?.getStringArrayList("recipe") ?: listOf()
                 RecipeDetailScreen(

@@ -49,7 +49,7 @@ fun settin(navController: NavController) {
         ) {
             Button(
                 onClick = {
-                    navController.navigate("Settin")
+                    navController.navigate("TestServer")
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
             )
