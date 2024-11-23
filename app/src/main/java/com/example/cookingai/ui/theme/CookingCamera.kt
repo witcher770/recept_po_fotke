@@ -49,6 +49,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -266,21 +267,6 @@ fun CookingCamera(navController: NavController, viewModel: MainViewModel, server
                 )
             }
 
-//            LaunchedEffect(recipeViewModel) {
-//                // Проверяем, что список обновился
-//                recipeViewModel.initializeList(listOf("яблоко", "банан", "груша"))
-//            }
-//
-//            Box(
-//                modifier = Modifier.fillMaxSize(),
-//                contentAlignment = Alignment.Center
-//            ) {
-//                if (recipeViewModel.strings.isEmpty()) {
-//                    Text("Список пуст")
-//                } else {
-//                    Text("Список содержит элементы")
-//                }
-//            }
 
             // Перемещение навигации в LaunchedEffect
             LaunchedEffect(capturedImageUri) {
@@ -289,7 +275,7 @@ fun CookingCamera(navController: NavController, viewModel: MainViewModel, server
                     Log.d("Camera", "Navigating to ListOfIngredients")
 
                     // здесь будет передача фото на сервер и получение списка
-                    val listOfIngredients = listOf("яблоко")
+                    val listOfIngredients = listOf("яблоко", "apple")
                     recipeViewModel.initializeList(listOfIngredients)
 
                     navController.navigate("ListOfIngredients")

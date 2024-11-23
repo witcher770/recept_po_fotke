@@ -29,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -54,7 +55,14 @@ fun ListOfIngredients(navController: NavController, viewModel: MainViewModel, re
 
     // Используем состояние для списка
     val itemList = remember { mutableStateListOf<String>() }
-    itemList.addAll(recipeViewModel.strings) // передаем данные из списка с прошлой страницы
+    //itemList.addAll(recipeViewModel.strings) // передаем данные из списка с прошлой страницы
+
+    // Добавляем элементы в список только один раз при создании Composable
+    LaunchedEffect(Unit) {
+        if (itemList.isEmpty()) { // Проверяем, пустой ли список
+            itemList.addAll(recipeViewModel.strings)
+        }
+    }
 
     //var itemList = listOf("яблоко", "банан")
     //val itemList = remember { mutableStateOf(recipeViewModel.strings) }

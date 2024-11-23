@@ -21,6 +21,4 @@ class RecipeViewModel : ViewModel() {
 
     // Метод для получения списка (уже доступен через val strings)
     fun getList(): List<String> = strings
-
-
 }
