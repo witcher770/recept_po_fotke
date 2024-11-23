@@ -47,12 +47,20 @@ import coil.compose.AsyncImage
 import com.example.cookingai.MainViewModel
 import com.example.cookingai.models.ServerViewModel
 import androidx.lifecycle.ViewModel
+import com.example.cookingai.models.RecipeViewModel
 
 @Composable
-fun ListOfIngredients(navController: NavController, viewModel: MainViewModel){
+fun ListOfIngredients(navController: NavController, viewModel: MainViewModel, recipeViewModel: RecipeViewModel = viewModel()){
 
     // Используем состояние для списка
-    val itemList = remember { mutableStateListOf("сосиска", "сорделька", "колбаска", "котлетка", "тефтелька") }
+    val itemList = remember { mutableStateListOf<String>() }
+    itemList.addAll(recipeViewModel.strings) // передаем данные из списка с прошлой страницы
+
+    //var itemList = listOf("яблоко", "банан")
+    //val itemList = remember { mutableStateOf(recipeViewModel.strings) }
+//    var itemList = remember { mutableStateListOf<String>() }
+//    itemList = remember { recipeViewModel.strings }
+    //itemList = recipeViewModel.strings
 
     var newItem by remember { mutableStateOf("") }
 
@@ -61,6 +69,7 @@ fun ListOfIngredients(navController: NavController, viewModel: MainViewModel){
            horizontalAlignment = Alignment.CenterHorizontally,
            verticalArrangement = Arrangement.Top )
     {
+
         Box(modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp),

@@ -95,6 +95,19 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.compose.v222)
 
+    implementation (libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.core.android)
+    //implementation(libs.androidx.datastore.core.jvm) из-за этого возникает ошибка. толи слишком старая штука толи слишком новая
+    //implementation(libs.androidx.core.ktx.v1150)
+    implementation(libs.androidx.lifecycle.runtime.ktx.android)
+    implementation(libs.androidx.activity.compose.v193)
+    implementation(libs.androidx.foundation.layout.android)
+    implementation(libs.androidx.foundation.layout.android)
+    implementation(libs.androidx.foundation.layout.android)
+    implementation(libs.androidx.foundation.layout.android)
+    implementation(libs.androidx.foundation.layout.android)
+
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

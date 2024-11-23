@@ -57,6 +57,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.cookingai.MainViewModel
+import com.example.cookingai.models.RecipeViewModel
 import com.example.cookingai.models.ServerViewModel
 
 
@@ -159,7 +160,8 @@ fun takePhoto(
 
 
 @Composable
-fun CookingCamera(navController: NavController, viewModel: MainViewModel, serverViewModel: ServerViewModel) {
+fun CookingCamera(navController: NavController, viewModel: MainViewModel, serverViewModel: ServerViewModel, recipeViewModel: RecipeViewModel) {
+
     var hasCameraPermission by remember { mutableStateOf(false) }
     // var imageCapture: ImageCapture? = remember { null }
     var imageCapture: ImageCapture? by remember { mutableStateOf(null) } // Инициализация с null
@@ -264,6 +266,21 @@ fun CookingCamera(navController: NavController, viewModel: MainViewModel, server
                 )
             }
 
+//            LaunchedEffect(recipeViewModel) {
+//                // Проверяем, что список обновился
+//                recipeViewModel.initializeList(listOf("яблоко", "банан", "груша"))
+//            }
+//
+//            Box(
+//                modifier = Modifier.fillMaxSize(),
+//                contentAlignment = Alignment.Center
+//            ) {
+//                if (recipeViewModel.strings.isEmpty()) {
+//                    Text("Список пуст")
+//                } else {
+//                    Text("Список содержит элементы")
+//                }
+//            }
 
             // Перемещение навигации в LaunchedEffect
             LaunchedEffect(capturedImageUri) {
@@ -271,7 +288,10 @@ fun CookingCamera(navController: NavController, viewModel: MainViewModel, server
                     // Переход только после захвата фото
                     Log.d("Camera", "Navigating to ListOfIngredients")
 
-                    serverViewModel
+                    // здесь будет передача фото на сервер и получение списка
+                    val listOfIngredients = listOf("яблоко")
+                    recipeViewModel.initializeList(listOfIngredients)
+
                     navController.navigate("ListOfIngredients")
                 }
             }

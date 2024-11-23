@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import com.example.cookingai.ui.theme.MainScreenshot
+import com.example.cookingai.ui.theme.TestPage
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
@@ -46,6 +47,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.rememberSaveable
 
 import coil.compose.AsyncImage
+import com.example.cookingai.models.RecipeViewModel
 import com.example.cookingai.models.ServerViewModel
 import com.example.cookingai.ui.theme.HistoryRecipes
 import com.example.cookingai.ui.theme.ListOfIngredients
@@ -77,17 +79,19 @@ class MainViewModel : ViewModel() {
 @Composable
 fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val navController = rememberNavController()
+    val recipeViewModel = RecipeViewModel()
     val serverViewModel = ServerViewModel()
     val allRecipes = remember { mutableStateListOf<List<String>>() }
 
 
     Column {
         NavHost(navController = navController, startDestination = "MainScreen") {
+            composable("TestPage") { TestPage(recipeViewModel) }
             composable("MainScreen") { MainScreenshot(navController) }
             composable("Settin") { SettiSreen(navController) }
-            composable("CookingCamera") { CookingCamera(navController, viewModel) }
+            composable("CookingCamera") { CookingCamera(navController, viewModel, serverViewModel, recipeViewModel) }
             composable("History") { History(navController) }
-            composable("ListOfIngredients") { ListOfIngredients(navController, viewModel) }
+            composable("ListOfIngredients") { ListOfIngredients(navController, viewModel, recipeViewModel) }
             composable("TestHistory") { TestServer(serverViewModel) }
             composable("recipe") { backStackEntry ->
                 val recipe = backStackEntry.arguments?.getStringArrayList("recipe") ?: listOf()
