@@ -1,12 +1,10 @@
 package com.example.cookingai.ui.theme
 
-import androidx.compose.foundation.layout.Arrangement
+
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -17,67 +15,109 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.cookingai.models.RecipeViewModel
+
+
+
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.cookingai.models.RecipeDataModel
+import com.example.cookingai.models.StorageRecipeViewModel
+
+
 
 @Composable
-fun RecipeDetailScreen(
-    recipe: List<String>, // где-то здесь передаем сюда список
+fun Recipe(
     navController: NavController,
-    onSaveRecipe: (List<String>) -> Unit,
-    onDeleteRecipe: (List<String>) -> Unit
+    recipeId: Int? = null, // ID рецепта или null для создания нового
+    recipeViewModel: RecipeViewModel = viewModel(),
+    storageRecipeViewModel: StorageRecipeViewModel = viewModel()
 ) {
-    LaunchedEffect(recipe) {
-        if (recipe.isNotEmpty()) onSaveRecipe(recipe)
+//    // Если ID передан, загружаем данные из базы, иначе временные данные
+//    val recipeData = if (recipeId != null) {
+//        storageRecipeViewModel.getRecipeById(recipeId) // Получение рецепта по ID из базы
+//    } else {
+//        recipeViewModel.strings
+//    }
+//
+//    var recipeName by remember { mutableStateOf(recipeData?.first ?: "") }
+//    var recipeContent by remember { mutableStateOf(recipeData?.second ?: "") }
+
+    // Если ID передан, загружаем данные из базы, иначе временные данные
+    // Данные рецепта из базы данных (если передан ID)
+    val recipeFromDatabase = recipeId?.let { id ->
+        storageRecipeViewModel.getRecipeById(id).observeAsState()
+    }?.value
+
+    // Локальные переменные для редактирования
+    var recipeName by remember {
+        mutableStateOf(
+            recipeFromDatabase?.name ?: recipeViewModel.strings.getOrNull(0) ?: ""
+        )
+    }
+    var recipeContent by remember {
+        mutableStateOf(
+            recipeFromDatabase?.content ?: recipeViewModel.strings.getOrNull(1) ?: ""
+        )
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
             .verticalScroll(rememberScrollState())
+            .padding(16.dp)
     ) {
-        // Название рецепта
-        Text(
-            text = recipe[0],
-            style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(bottom = 16.dp)
+        OutlinedTextField(
+            value = recipeName,
+            onValueChange = { recipeName = it },
+            label = { Text("Название рецепта") },
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
         )
 
-        // Содержание рецепта
-        Text(
-            text = recipe[1],
-            style = MaterialTheme.typography.body1,
-            lineHeight = 24.sp
+        OutlinedTextField(
+            value = recipeContent,
+            onValueChange = { recipeContent = it },
+            label = { Text("Описание рецепта") },
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            maxLines = 10
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Кнопки
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+        Button(
+            onClick = {
+                if (recipeId == null) {
+                    // Создание нового рецепта
+                    storageRecipeViewModel.addRecipe(recipeName, recipeContent)
+                } else {
+                    // Обновление существующего рецепта
+                    storageRecipeViewModel.updateRecipe(
+                        RecipeDataModel(
+                        id = recipeId,
+                        name = recipeName,
+                        content = recipeContent
+                    )
+                    )
+                }
+                navController.navigate("RecipeListScreen")
+            },
+            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
         ) {
-            // Кнопка назад
-            Button(onClick = { navController.navigate("allRecipes") }) {
-                Text("Назад к рецептам")
-            }
-
-            // Кнопка удалить
-            Button(
-                onClick = {
-                    onDeleteRecipe(recipe)
-                    navController.navigate("allRecipes") {
-                        popUpTo("recipe") { inclusive = true }
-                    }
-                },
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colors.error)
-            ) {
-                Text("Удалить", color = MaterialTheme.colors.onError)
-            }
+            Text(if (recipeId == null) "Сохранить новый рецепт" else "Обновить рецепт")
         }
     }
 }
+

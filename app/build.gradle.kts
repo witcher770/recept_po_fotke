@@ -1,11 +1,12 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
 }
 
 android {
     namespace = "com.example.cookingai"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.cookingai"
@@ -37,6 +38,7 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
+
         compose = true
     }
     composeOptions {
@@ -86,7 +88,7 @@ dependencies {
     implementation (libs.androidx.lifecycle.viewmodel.compose) // Для ViewModel в Compose
     implementation (libs.androidx.runtime.livedata) // Для LiveData с Compose
     // Jetpack Compose
-    implementation (libs.androidx.ui.v175)  // или актуальная версия Compose
+
     implementation (libs.material3)  // Для использования Material3
     implementation (libs.androidx.runtime.livedata.v140) // Для LiveData с Compose
     implementation (libs.androidx.lifecycle.viewmodel.compose.v261) // Для ViewModel с Compose
@@ -97,17 +99,26 @@ dependencies {
 
     implementation (libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore.core.android)
-    //implementation(libs.androidx.datastore.core.jvm) из-за этого возникает ошибка. толи слишком старая штука толи слишком новая
+
     //implementation(libs.androidx.core.ktx.v1150)
     implementation(libs.androidx.lifecycle.runtime.ktx.android)
     implementation(libs.androidx.activity.compose.v193)
     implementation(libs.androidx.foundation.layout.android)
-    implementation(libs.androidx.foundation.layout.android)
-    implementation(libs.androidx.foundation.layout.android)
-    implementation(libs.androidx.foundation.layout.android)
-    implementation(libs.androidx.foundation.layout.android)
 
+    implementation(libs.androidx.room.common)
+    implementation(libs.androidx.room.ktx)
 
+    implementation (libs.androidx.room.runtime)
+
+    ksp (libs.androidx.room.compiler)
+    implementation (libs.androidx.room.runtime.v250)  // или актуальная версия
+    implementation (libs.androidx.lifecycle.viewmodel.ktx)
+    implementation (libs.androidx.lifecycle.livedata.ktx)
+
+//    implementation (libs.play.services)
+//    implementation (libs.firebase.firestore)
+
+    implementation (libs.androidx.room.ktx.v250) // для работы с корутинами
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

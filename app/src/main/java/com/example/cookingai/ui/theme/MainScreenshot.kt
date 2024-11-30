@@ -137,7 +137,7 @@ fun history(navController: NavController) {
         ) {
             Button(
                 onClick = {
-                    navController.navigate("ListOfIngredients")
+                    navController.navigate("RecipeListScreen")
                 },
                 modifier = Modifier
                     .fillMaxWidth(0.7f)

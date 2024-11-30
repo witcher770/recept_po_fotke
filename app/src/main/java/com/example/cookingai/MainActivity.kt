@@ -15,6 +15,8 @@ import com.example.cookingai.ui.theme.SettiSreen
 //import com.example.cookingai.models.MainViewModel
 
 import android.Manifest
+import android.app.Application
+import android.content.Context
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,16 +44,23 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.mutableStateOf
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 import coil.compose.AsyncImage
 import com.example.cookingai.models.RecipeViewModel
 import com.example.cookingai.models.ServerViewModel
-import com.example.cookingai.ui.theme.HistoryRecipes
+import com.example.cookingai.models.StorageRecipeViewModel
+import com.example.cookingai.ui.theme.RecipeListScreen
 import com.example.cookingai.ui.theme.ListOfIngredients
-import com.example.cookingai.ui.theme.RecipeDetailScreen
+import com.example.cookingai.ui.theme.Recipe
 import com.example.cookingai.ui.theme.TestServer
 
 //import com.example.cookingai.ui.theme.MainScreenshot
@@ -76,12 +85,21 @@ class MainViewModel : ViewModel() {
     }
 }
 
+
 @Composable
 fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val navController = rememberNavController()
-    val recipeViewModel = RecipeViewModel()
-    val serverViewModel = ServerViewModel()
-    val allRecipes = remember { mutableStateListOf<List<String>>() }
+    val recipeViewModel: RecipeViewModel = viewModel()
+    val serverViewModel: ServerViewModel = viewModel()
+//    val context = LocalContext.current.applicationContext as Application
+//    val storageRecipeViewModel: StorageRecipeViewModel = viewModel(
+//        factory = ViewModelProvider.AndroidViewModelFactory(context)
+//    )
+    val context = LocalContext.current.applicationContext as Application
+    if (context !is Application) {
+        throw IllegalStateException("Context is not an Application context")
+    }
+    val storageRecipeViewModel = StorageRecipeViewModel(context)
 
 
     Column {
@@ -93,21 +111,23 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             composable("History") { History(navController) }
             composable("ListOfIngredients") { ListOfIngredients(navController, viewModel, recipeViewModel) }
             composable("TestHistory") { TestServer(serverViewModel) }
-            composable("recipe") { backStackEntry ->
-                val recipe = backStackEntry.arguments?.getStringArrayList("recipe") ?: listOf()
-                RecipeDetailScreen(
-                    recipe = recipe,
+            //composable("Recipe") { Recipe(navController, recipeViewModel) }
+
+            // Экран для рецепта (создание или редактирование)
+            composable(
+                route = "RecipeScreen/{recipeId}",
+                arguments = listOf(navArgument("recipeId") { type = NavType.IntType; defaultValue = 0 })
+            ) { backStackEntry ->
+                val recipeId = backStackEntry.arguments?.getInt("recipeId") // Получаем ID из аргументов
+                Recipe(
                     navController = navController,
-                    onSaveRecipe = { allRecipes.add(it) },
-                    onDeleteRecipe = { recipeToDelete -> allRecipes.remove(recipeToDelete) }
-                )
+                    recipeId = if (recipeId == 0) null else recipeId,
+                    recipeViewModel = recipeViewModel,
+                    storageRecipeViewModel = storageRecipeViewModel
+                    )
             }
-            composable("allRecipes") {
-                HistoryRecipes(
-                    allRecipes = allRecipes,
-                    navController = navController
-                )
-            }
+
+            composable("RecipeListScreen") { RecipeListScreen(navController) }
         }
 
         // Отображаем последнее фото под кнопкой "История", если оно есть

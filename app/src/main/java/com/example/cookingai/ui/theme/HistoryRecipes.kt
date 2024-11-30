@@ -12,7 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material3.Card
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.Button
@@ -27,54 +28,53 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.foundation.lazy.items
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.TopAppBar
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.os.bundleOf
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.cookingai.models.StorageRecipeViewModel
 
 
 @Composable
-fun HistoryRecipes(allRecipes: List<List<String>>, navController: NavController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Список рецептов",
-            style = MaterialTheme.typography.h5,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+fun RecipeListScreen(navController: NavController, storageRecipeViewModel: StorageRecipeViewModel = viewModel()) {
+    val recipeList by storageRecipeViewModel.recipeList.collectAsState(initial = emptyList())
 
-        LazyColumn {
-            items(allRecipes) { recipe ->
-                RecipeItem(
-                    recipe = recipe, // recipe должен быть List<String>
-                    onClick = {
-
-                        navController.navigate("recipe")
-                    }
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Список рецептов") })
+        }
+    ) { padding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            items(recipeList) { recipe ->
+                RecipeListItem(
+                    recipeName = recipe.name,
+                    onClick = { navController.navigate("RecipeScreen/${recipe.id}") }
                 )
             }
         }
-
     }
 }
 
 @Composable
-fun RecipeItem(recipe: List<String>, onClick: () -> Unit) {
+fun RecipeListItem(recipeName: String, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable(onClick = onClick),
-        elevation = 4.dp
+            .padding(8.dp),
+        onClick = onClick
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = recipe[0], style = MaterialTheme.typography.h6)
-            Text(
-                text = recipe[1],
-                style = MaterialTheme.typography.body2,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+        Text(
+            text = recipeName,
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.h1
+        )
     }
 }
