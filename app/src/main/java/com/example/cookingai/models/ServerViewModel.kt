@@ -17,6 +17,7 @@ import java.io.File
 
 class ServerViewModel : ViewModel() {
     val responseLiveData = MutableLiveData<String>() // Здесь будет ответ от сервера
+    val photoResponseLiveData = MutableLiveData<String>() // Новый ответ на изображение
 
     fun sendText(text: String) {
         val request = RequestModel(text) // Создается модель запроса с текстом
@@ -80,6 +81,35 @@ class ServerViewModel : ViewModel() {
             }
         })
     }
+
+    fun sendImage(photoUri: Uri, contentResolver: ContentResolver) {
+        val file = File(photoUri.path) // Получение файла по URI
+        val mimeType = contentResolver.getType(photoUri) ?: "image/*" // Определяем MIME-тип
+        val requestFile = RequestBody.create(mimeType.toMediaTypeOrNull(), file) // Создаем тело запроса
+        val body = MultipartBody.Part.createFormData("image", file.name, requestFile) // Создаем MultipartBody.Part
+
+        // Отправка изображения на сервер
+        RetrofitClient.apiService.processImage(body).enqueue(object : Callback<ResponseImageModel> {
+            override fun onResponse(call: Call<ResponseImageModel>, response: Response<ResponseImageModel>) {
+                if (response.isSuccessful) {
+                    response.body()?.let { result ->
+                        // Обновляем LiveData с полученными продуктами и рецептом
+                        photoResponseLiveData.postValue(
+                            "Продукты: ${result.products.joinToString(", ")}\nРецепт: ${result.recipe}"
+                        )
+                    }
+                } else {
+                    photoResponseLiveData.postValue("Ошибка: ${response.code()}") // Обработка ошибки
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseImageModel>, t: Throwable) {
+                Log.e("API", "Ошибка отправки изображения: ${t.message}")
+                photoResponseLiveData.postValue("Не удалось подключиться к серверу") // Обработка ошибки
+            }
+        })
+    }
+
 
 
 }
