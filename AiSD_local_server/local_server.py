@@ -114,7 +114,6 @@
 #     app.run(host='0.0.0.0')
 
 
-
 from flask import Flask, request, jsonify
 from PIL import Image
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
@@ -129,27 +128,46 @@ logging.basicConfig(level=logging.INFO)
 
 
 from ultralytics import YOLO
-model_detection = YOLO('yolov8s.pt')  # Downloaded model file
+model_detection = YOLO('yolov5su.pt')  # Downloaded model file
 
 # Загрузка моделей
 # model_detection = YOLO('yolov5s')
 model_recipe = GPT2LMHeadModel.from_pretrained("gpt2")
 tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+tokenizer.pad_token = tokenizer.eos_token
+model_recipe.config.pad_token_id = tokenizer.eos_token_id
 
 
 def detect_products(image):
-    print(type(image))
+    # print(type(image))
     results: list = model_detection(image) # получаем продукты, изображенные на фото
-    print(results)
-    products = results.pandas().xyxy[0]['name'].dropna().tolist()
+    # print(type(results))
+    # print(results)
+    products = []
+    for result in results:
+        for box in result.boxes:
+            class_name = model_detection.names[box.cls.cpu().item()]  # Имя класса
+            products.append(class_name)
+    # products = results.pandas().xyxy[0]['name'].dropna().tolist()
+    # products = results
     return products
 
 
 def generate_recipe(products):
     prompt = f"На основе продуктов {', '.join(products)}, придумайте рецепт блюда:"
-    inputs = tokenizer.encode(prompt, return_tensors="pt")
-    outputs = model_recipe.generate(inputs, max_length=150, temperature=0.7, top_k=50)
+    inputs = tokenizer.encode(prompt, return_tensors="pt", padding=True, truncation=True)
+    attention_mask = inputs.ne(tokenizer.pad_token_id).long()  # Генерация маски на основе идентификатора заполнителя
+    outputs = model_recipe.generate(
+        inputs,
+        attention_mask=attention_mask,
+        max_length=400,
+        temperature=0.7,
+        top_k=50,
+        do_sample=True
+    )
+    print(outputs)
     recipe = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    print(recipe)
     return recipe
 
 

@@ -18,7 +18,7 @@ data = {"text": text_to_send}
 
 # Путь к изображению на ПК или в папке проекта
 # image_path = 'C:\\Users\\Maksim_Misha\\Downloads\\three_apples.jpg'
-image_path = 'product_images//books.jpeg'
+image_path = 'product_images//hard_apple.jpg'
 
 # Открытие изображения и сохранение его в переменную
 image_to_send = Image.open(image_path)
@@ -66,7 +66,7 @@ try:
             # Попытка прочитать JSON, если сервер отправляет его
             if response.status_code == 200:
                 try:
-                    processed_image = response.json().get("products")  # Извлекаем обработанные данные
+                    processed_image = response.json().get("recipe")  # Извлекаем обработанные данные
                     print("Обработанный текст:", processed_image)
                 except ValueError:
                     print("Ошибка: Сервер не вернул JSON.")
