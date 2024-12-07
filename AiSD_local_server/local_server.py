@@ -129,7 +129,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 from ultralytics import YOLO
-model_detection = YOLO('yolov5su.pt')  # Downloaded model file
+model_detection = YOLO('yolov8s.pt')  # Downloaded model file
 
 # Загрузка моделей
 # model_detection = YOLO('yolov5s')
@@ -138,7 +138,9 @@ tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
 
 
 def detect_products(image):
-    results = model_detection(image)
+    print(type(image))
+    results: list = model_detection(image) # получаем продукты, изображенные на фото
+    print(results)
     products = results.pandas().xyxy[0]['name'].dropna().tolist()
     return products
 

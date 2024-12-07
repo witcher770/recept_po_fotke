@@ -275,7 +275,7 @@ fun CookingCamera(navController: NavController, viewModel: MainViewModel, server
                     Log.d("Camera", "Navigating to ListOfIngredients")
 
                     // здесь будет передача фото на сервер и получение списка
-                    val listOfIngredients = listOf("яблоко", "apple")
+                    val listOfIngredients = listOf("яблоко")
                     recipeViewModel.initializeList(listOfIngredients)
 
                     navController.navigate("ListOfIngredients")

@@ -17,7 +17,8 @@ data = {"text": text_to_send}
 
 
 # Путь к изображению на ПК или в папке проекта
-image_path = 'C:\\Users\\Maksim_Misha\\Downloads\\three_apples.jpg'
+# image_path = 'C:\\Users\\Maksim_Misha\\Downloads\\three_apples.jpg'
+image_path = 'product_images//books.jpeg'
 
 # Открытие изображения и сохранение его в переменную
 image_to_send = Image.open(image_path)
