@@ -1,6 +1,7 @@
 package com.example.cookingai.network
 
 import com.example.cookingai.models.RequestModel
+import com.example.cookingai.models.ResponseImageModel
 import com.example.cookingai.models.ResponseModel
 import okhttp3.MultipartBody
 import retrofit2.Call
@@ -18,6 +19,13 @@ interface ApiService {
     fun uploadPhoto(
         @Part photo: MultipartBody.Part
     ): Call<List<String>> // Возвращает список
+
+    @Multipart
+    @POST("/process_image") // Обновите путь, если сервер настроен иначе
+    fun processImage(
+        @Part image: MultipartBody.Part
+    ): Call<ResponseImageModel> // Возвращает JSON-объект с продуктами и рецептом
+
 
     @POST("/process_list")
     fun processList(

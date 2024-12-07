@@ -107,24 +107,40 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             composable("TestPage") { TestPage(recipeViewModel) }
             composable("MainScreen") { MainScreenshot(navController) }
             composable("Settin") { SettiSreen(navController) }
-            composable("CookingCamera") { CookingCamera(navController, viewModel, serverViewModel, recipeViewModel) }
+            composable("CookingCamera") {
+                CookingCamera(
+                    navController,
+                    viewModel,
+                    serverViewModel,
+                    recipeViewModel
+                )
+            }
             composable("History") { History(navController) }
-            composable("ListOfIngredients") { ListOfIngredients(navController, viewModel, recipeViewModel) }
-            composable("TestHistory") { TestServer(serverViewModel) }
+            composable("ListOfIngredients") {
+                ListOfIngredients(
+                    navController,
+                    viewModel,
+                    recipeViewModel
+                )
+            }
+            composable("TestHistory") { TestServer(serverViewModel, viewModel ) }
             //composable("Recipe") { Recipe(navController, recipeViewModel) }
 
             // Экран для рецепта (создание или редактирование)
             composable(
                 route = "RecipeScreen/{recipeId}",
-                arguments = listOf(navArgument("recipeId") { type = NavType.IntType; defaultValue = 0 })
+                arguments = listOf(navArgument("recipeId") {
+                    type = NavType.IntType; defaultValue = 0
+                })
             ) { backStackEntry ->
-                val recipeId = backStackEntry.arguments?.getInt("recipeId") // Получаем ID из аргументов
+                val recipeId =
+                    backStackEntry.arguments?.getInt("recipeId") // Получаем ID из аргументов
                 Recipe(
                     navController = navController,
                     recipeId = if (recipeId == 0) null else recipeId,
                     recipeViewModel = recipeViewModel,
                     storageRecipeViewModel = storageRecipeViewModel
-                    )
+                )
             }
 
             composable("RecipeListScreen") { RecipeListScreen(navController) }
@@ -142,8 +158,6 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         }
     }
 }
-
-
 
 
 @Composable
