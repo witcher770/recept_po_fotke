@@ -7,7 +7,8 @@ import java.util.concurrent.TimeUnit
 
 
 object RetrofitClient {
-    private const val BASE_URL = "http://92.53.120.84:25/" // Замените на адрес вашего сервера
+//    private const val BASE_URL = "http://92.53.120.84:25/" // Замените на адрес вашего сервера
+    private const val BASE_URL = "http://192.168.0.116:5000/" // Замените на адрес вашего сервера
 
     // Настройка OkHttpClient с увеличенными тайм-аутами
     private val okHttpClient = OkHttpClient.Builder()

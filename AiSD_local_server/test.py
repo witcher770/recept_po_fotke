@@ -3,7 +3,8 @@ from PIL import Image
 
 # URL вашего сервера
 # url = "http://92.53.120.84:25/process_text"  # Замените "/process" на реальный путь, если он другой
-url_text = "http://127.0.0.1:5000/process_text"  # Замените "/process" на реальный путь, если он другой
+# url_text = "http://127.0.0.1:5000/process_text"  # Замените "/process" на реальный путь, если он другой
+url_text = "http://192.168.0.116:5000/process_text"  # Замените "/process" на реальный путь, если он другой
 url_image = "http://127.0.0.1:5000/process_image"  # Замените "/process" на реальный путь, если он другой
 # Укажите нужный endpoint
 # import sys

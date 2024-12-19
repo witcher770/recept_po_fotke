@@ -117,17 +117,28 @@
 from flask import Flask, request, jsonify
 from PIL import Image
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
-
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import logging
 from ultralytics import YOLO
 
-
-import logging
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-from ultralytics import YOLO
+# Загрузка модели и токенизатора
+# model_name = "tiiuae/falcon-7b-instruct"  # Или другая подходящая модель
+# tokenizer = AutoTokenizer.from_pretrained(model_name)
+# model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", torch_dtype="float16")
+# model_name = "meta-llama/Llama-2-7b-chat-hf"
+# access_token = "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"  # Ваш токен доступа
+
+# tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=access_token)
+# model = AutoModelForCausalLM.from_pretrained(model_name, use_auth_token=access_token, device_map="auto", torch_dtype="float16")
+# tokenizer.pad_token = tokenizer.eos_token
+# model.config.pad_token_id = tokenizer.eos_token_id
+
+
 model_detection = YOLO('yolov5su.pt')  # Downloaded model file
 
 # Загрузка моделей
@@ -139,18 +150,100 @@ model_recipe.config.pad_token_id = tokenizer.eos_token_id
 
 
 def detect_products(image):
-    # print(type(image))
-    results: list = model_detection(image) # получаем продукты, изображенные на фото
-    # print(type(results))
-    # print(results)
+    results: list = model_detection(image)  # получаем продукты, изображенные на фото
     products = []
     for result in results:
         for box in result.boxes:
             class_name = model_detection.names[box.cls.cpu().item()]  # Имя класса
             products.append(class_name)
-    # products = results.pandas().xyxy[0]['name'].dropna().tolist()
-    # products = results
     return products
+
+
+# def generate_recipe(products):
+#     # prompt = f"На основе продуктов {', '.join(products)}, придумайте рецепт блюда:"
+#     # prompt = f"Based on the products {', '.join(products)}, come up with a recipe for a dish:"
+#     prompt = (f"Based on the following products: {', '.join(products)}, create a detailed recipe with ingredients and "
+#               f"cooking instructions.")
+#     # prompt = f"""Based on the following products: {', '.join(products)}, create a detailed recipe."""
+#
+#
+#
+#     inputs = tokenizer.encode(prompt, return_tensors="pt", padding=True, truncation=True)  #
+#     attention_mask = inputs.ne(tokenizer.pad_token_id).long()  # Генерация маски на основе идентификатора заполнителя
+#     # outputs = model_recipe.generate(
+#     #     inputs,
+#     #     attention_mask=attention_mask,
+#     #     max_length=400,
+#     #     temperature=1.0,
+#     #     top_k=50,
+#     #     top_p=0.9,
+#     #     do_sample=True
+#     # )
+#     # Генерация текста
+#     # outputs = model_recipe.generate(
+#     #     inputs,
+#     #     attention_mask=attention_mask,
+#     #     max_length=300,  # Умеренная длина
+#     #     temperature=0.8,  # Сбалансированная случайность
+#     #     top_k=50,  # Оставляем только 50 лучших вариантов
+#     #     top_p=0.95,  # Ограничиваем вероятности до 95%
+#     #     do_sample=True,  # Используем выборку
+#     #     repetition_penalty=1.2,  # Предотвращаем повторы
+#     # )
+#
+#     outputs = model_recipe.generate(
+#         inputs,
+#         attention_mask=attention_mask,
+#         max_length=300,  # Ограничиваем длину
+#         temperature=0.7,  # Уменьшаем случайность
+#         top_k=40,  # Оставляем топ-40 токенов
+#         top_p=0.9,  # Ограничиваем вероятность
+#         do_sample=True,  # Используем выборку
+#         repetition_penalty=1.5,  # Штраф за повторения
+#     )
+#
+#     # print(outputs)
+#     recipe = tokenizer.decode(outputs[0], skip_special_tokens=True)
+#     print(recipe)
+#     return recipe
+
+# def generate_recipe(products):
+#     # Четкий и лаконичный запрос
+#     prompt = f"""Based on the following products: {', '.join(products)}, create a detailed recipe.
+#     Respond strictly in this format:
+#     1. Ingredients:
+#     - (list the ingredients here)
+#     2. Instructions:
+#     - (list step-by-step instructions here)
+#     """
+#
+#     # Токенизация
+#     # inputs = tokenizer(prompt, return_tensors="pt", padding=True, truncation=True)
+#     inputs = tokenizer.encode(prompt, return_tensors="pt", padding=True, truncation=True)
+#     attention_mask = inputs.ne(tokenizer.pad_token_id).long()  # Генерация маски на основе идентификатора заполнителя
+#     # Генерация текста
+#     outputs = model_recipe.generate(
+#         # inputs["input_ids"],
+#         inputs,
+#         attention_mask=attention_mask,
+#         max_length=300,  # Максимальная длина текста
+#         temperature=0.7,  # Умеренная случайность
+#         top_k=50,  # Оставляем только 50 лучших вариантов
+#         top_p=0.9,  # Ограничиваем вероятности до 90%
+#         repetition_penalty=1.5,  # Предотвращаем повторения
+#     )
+#
+#     # Декодирование и возвращение результата
+#     recipe = tokenizer.decode(outputs[0], skip_special_tokens=True)
+#
+#     # Постобработка для проверки формата
+#     # formatted_recipe = []
+#     # for line in recipe.split("\n"):
+#     #     if line.startswith("1.") or line.startswith("2."):
+#     #         formatted_recipe.append(line)
+#     #
+#     # return "\n".join(formatted_recipe)
+#     return recipe
 
 
 def generate_recipe(products):
@@ -163,13 +256,13 @@ def generate_recipe(products):
         max_length=400,
         temperature=0.7,
         top_k=50,
-        do_sample=True
+        top_p=0.9,  # Ограничиваем вероятности до 90%
+        repetition_penalty=1.5  # Предотвращаем повторения
     )
     print(outputs)
     recipe = tokenizer.decode(outputs[0], skip_special_tokens=True)
     print(recipe)
     return recipe
-
 
 @app.route('/process_image', methods=['POST'])
 def process_image():
@@ -178,6 +271,7 @@ def process_image():
 
     file = request.files['image']
     image = Image.open(file.stream).convert("RGB")
+
 
     try:
         products = detect_products(image)
@@ -200,6 +294,6 @@ def process_text():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+    app.run(host='192.168.0.116')
 
 
